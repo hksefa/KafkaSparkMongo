@@ -2,8 +2,10 @@ package com.bigdatum.kafka;
 
 import java.util.Properties;
 
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import com.bigdatum.data.*;
 
@@ -19,11 +21,19 @@ public class KafkaProducerAsync {
 		KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
 		for (int i=0 ; i < 100; i++){
 			ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, "key-" + i, new jsonData().getData());
-		//	System.out.println(record.toString());
-			producer.send(record);
+			producer.send(record, new ProducerCallBack());
 			Thread.sleep(250);
 		}
 		producer.close();
 	}
+}
+class ProducerCallBack implements Callback {
 
+	@Override
+	public void onCompletion(RecordMetadata metadata, Exception e) {
+		if (e != null) {
+			System.out.println(metadata.topic()+metadata.offset()+metadata.partition());
+		}
+	}
+	
 }

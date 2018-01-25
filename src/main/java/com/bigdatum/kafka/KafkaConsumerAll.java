@@ -9,7 +9,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 public class KafkaConsumerAll {
-	private static final String topic = "mytopic";
+	private static final String topic = "Carriers";
 	private static final String broker = "localhost:9092";
 	
 	public static void main(String[] args){
@@ -18,6 +18,7 @@ public class KafkaConsumerAll {
 		props.put("group.id", "mygroup");
 		props.put("key.deserializer", StringDeserializer.class);
 		props.put("value.deserializer", StringDeserializer.class);
+		props.put("auto.offset.reset", "earliest");
 		
 		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Arrays.asList(topic));

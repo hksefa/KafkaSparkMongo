@@ -23,9 +23,8 @@ import org.apache.spark.streaming.kafka010.LocationStrategies;
 import scala.Tuple2;
 
 public class SparkKafkaDStream {
-	private static final String topic = "mytopic";
+	private static final String topic = "Carriers";
 	private static final String broker = "localhost:9092";
-//	private static final String zookeeper = "localhost:2181";
 	private static final String clientid = "Consumer";
 	private static final Pattern SPACE = Pattern.compile(" ");
 	
@@ -34,7 +33,7 @@ public class SparkKafkaDStream {
 		Logger.getLogger("akka").setLevel(Level.ERROR);
 		
 		SparkConf conf = new SparkConf().setAppName("KafkaDStream").setMaster("local[2]");
-		JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(5));
+		JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
 		Collection<String> topics = Arrays.asList(topic);
 		
 		Map<String, Object> kafkaParams = new HashMap<>();
@@ -44,7 +43,7 @@ public class SparkKafkaDStream {
         kafkaParams.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, 
                         "org.apache.kafka.common.serialization.StringDeserializer");
         kafkaParams.put(ConsumerConfig.GROUP_ID_CONFIG,clientid);
-        kafkaParams.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"latest");
+        kafkaParams.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest");
         kafkaParams.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,true);
 		
         final JavaInputDStream<ConsumerRecord<String, String>> messages = KafkaUtils.createDirectStream(jssc, LocationStrategies.PreferConsistent(), ConsumerStrategies.Subscribe(topics,kafkaParams));
